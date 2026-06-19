@@ -1,0 +1,20 @@
+# Data, models, and generated outputs
+data/
+outputs/
+model_cache/
+Ultralytics/
+matplotlib_cache/
+*.pt
+*.pth
+*.onnx
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
