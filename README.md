@@ -56,6 +56,7 @@ The black triangle labeled `UAV` in the BEV preview is the current platform posi
 |   |-- collect_carla_25d.py
 |   |-- finetune_segformer_carla.py
 |   |-- fuse_camera_lidar_semantic_25d.py
+|   |-- oracle_carla_semantic_bev.py
 |   `-- build_bev_box_dataset.py
 |-- carla_bev_training_001/       # Current 100-frame CARLA collection
 |-- carla_uav_collection/         # Earlier CARLA collection kept for reference
@@ -169,6 +170,25 @@ outputs/rgb_lidar_pose_segformer_visdrone_yolo/
 ```
 
 `final_grid.npz` contains `class_id`, `count`, `z_min`, `z_max`, ground reference, origin, and local axes. `run_summary.json` records YOLO detections and the number of dynamic LiDAR hits used in each frame.
+
+## CARLA Oracle Visualization
+
+`scripts/oracle_carla_semantic_bev.py` is a separate upper-bound visualization script. It intentionally reads the CARLA semantic camera, depth camera, LiDAR, poses, calibration, and actor 3D labels. It is useful for checking data alignment, producing a reference map, and measuring how much room remains for the deployable model to improve.
+
+```powershell
+D:\anaconda3\python.exe scripts\oracle_carla_semantic_bev.py `
+  --dataset carla_bev_training_001 `
+  --output-dir outputs\carla_oracle_semantic_bev `
+  --window-frames 10 `
+  --length-m 50 `
+  --width-m 40 `
+  --back-m 10 `
+  --resolution 0.5 `
+  --depth-stride 5 `
+  --max-frames 100
+```
+
+Its output has the same four artifacts as the deployable pipeline, but `run_summary.json` marks the mode as ground-truth oracle. Do not use this script as a real-world runtime solution because a physical UAV has no CARLA semantic/depth sensor or simulator actor labels.
 
 ## CARLA Collection
 

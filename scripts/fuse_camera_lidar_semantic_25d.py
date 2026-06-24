@@ -447,7 +447,21 @@ def rasterize(frames: deque, current_pose: np.ndarray, length_m: float, width_m:
     }
 
 
-def render_pair(camera: np.ndarray, grid: dict, frame_id: str, detections: list[dict], gt_boxes: list[dict], length_m: float, width_m: float, back_m: float, window_frames: int) -> Image.Image:
+def render_pair(
+    camera: np.ndarray,
+    grid: dict,
+    frame_id: str,
+    detections: list[dict],
+    gt_boxes: list[dict],
+    length_m: float,
+    width_m: float,
+    back_m: float,
+    window_frames: int,
+    map_title: str | None = None,
+    dynamic_label: str = "YOLO detections",
+    dynamic_count: int | None = None,
+    show_gt_count: bool = True,
+) -> Image.Image:
     font = ImageFont.load_default()
     panel_width, panel_height = 800, 450
     camera_image = Image.fromarray(camera, "RGB").resize((panel_width, panel_height), Image.Resampling.LANCZOS)
@@ -474,7 +488,7 @@ def render_pair(camera: np.ndarray, grid: dict, frame_id: str, detections: list[
     canvas.paste(map_image, (828, 50))
     draw = ImageDraw.Draw(canvas)
     draw.text((20, 28), f"Frame {frame_id} | RGB input", fill=(25, 35, 42), font=font)
-    draw.text((828, 28), f"SegFormer + LiDAR | {window_frames}-frame BEV", fill=(25, 35, 42), font=font)
+    draw.text((828, 28), map_title or f"SegFormer + LiDAR | {window_frames}-frame BEV", fill=(25, 35, 42), font=font)
 
     for box in gt_boxes:
         grid_corners = box["pixels"].astype(float)
@@ -497,8 +511,10 @@ def render_pair(camera: np.ndarray, grid: dict, frame_id: str, detections: list[
         draw.text((x + 18, y), label, fill=(52, 63, 70), font=font)
         y += 30
     draw.text((828 + map_width + 14, 300), f"LiDAR occupied cells: {int(occupied.sum())}", fill=(77, 88, 95), font=font)
-    draw.text((828 + map_width + 14, 326), f"YOLO detections: {len(detections)}", fill=(77, 88, 95), font=font)
-    draw.text((828 + map_width + 14, 348), f"GT boxes (optional): {len(gt_boxes)}", fill=(77, 88, 95), font=font)
+    count = len(detections) if dynamic_count is None else dynamic_count
+    draw.text((828 + map_width + 14, 326), f"{dynamic_label}: {count}", fill=(77, 88, 95), font=font)
+    if show_gt_count:
+        draw.text((828 + map_width + 14, 348), f"GT boxes (optional): {len(gt_boxes)}", fill=(77, 88, 95), font=font)
     draw.text((20, 510), "RGB camera", fill=(77, 88, 95), font=font)
     draw.text((828, 510), f"{length_m:.0f} m x {width_m:.0f} m local semantic map", fill=(77, 88, 95), font=font)
     return canvas
