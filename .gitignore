@@ -1,0 +1,16 @@
+# Collected CARLA data can be regenerated and is too large for normal Git.
+carla_uav_collection/
+carla_bev_training_001/
+
+# Runtime artifacts and downloaded model weights.
+outputs/
+models/
+\.cache/
+model_cache/
+matplotlib_cache/
+Ultralytics/
+*.pt
+
+# Python caches.
+__pycache__/
+*.py[cod]
